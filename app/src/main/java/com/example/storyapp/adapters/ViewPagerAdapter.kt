@@ -1,4 +1,4 @@
-package com.example.storyapp.onboarding
+package com.example.storyapp.adapters
 
 import android.view.View
 import androidx.fragment.app.Fragment

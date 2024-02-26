@@ -1,19 +1,17 @@
 package com.example.storyapp
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
-import androidx.viewpager.widget.ViewPager
 import androidx.viewpager2.widget.ViewPager2
 import com.example.storyapp.databinding.ActivityMainBinding
-import com.example.storyapp.onboarding.ViewPagerAdapter
+import com.example.storyapp.adapters.ViewPagerAdapter
 import com.example.storyapp.onboarding.screens.FirstFragment
 import com.example.storyapp.onboarding.screens.SecondFragment
 import com.example.storyapp.onboarding.screens.ThirdFragment
@@ -63,6 +61,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 if (position == 1) {
                     binding.btnPrevious.visibility = View.VISIBLE
+                    binding.btnNext.text ="next"
                 } else if (position == 2) {
                     binding.btnNext.text ="start"
                 } else {
@@ -75,7 +74,9 @@ class MainActivity : AppCompatActivity() {
             if (view.currentItem < adapter.itemCount - 1) {
                 view.currentItem += 1
             } else {
-                Toast.makeText(this, "This is the last page", Toast.LENGTH_SHORT).show()
+                val intent = Intent(this, StoryActivity::class.java)
+                startActivity(intent)
+                //finish()
             }
         }
         binding.btnPrevious.setOnClickListener {
