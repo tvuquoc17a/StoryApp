@@ -12,11 +12,14 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
+import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import com.example.storyapp.databinding.ActivityMainBinding
+import com.example.storyapp.databinding.ActivityStoryBinding
 import com.example.storyapp.databinding.FragmentStoryBinding
 import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.Dispatchers
@@ -25,11 +28,12 @@ import kotlinx.coroutines.launch
 import javax.sql.DataSource
 
 
-class StoryFragment : Fragment() {
+class StoryFragment(private var viewPager2: ViewPager2) : Fragment() {
     private lateinit var binding: FragmentStoryBinding
     private var isImageLoadedFromCache = false
     private lateinit var imageUrl: String
     private lateinit var progressBar: ProgressBar
+    private lateinit var activityStoryBinding : ActivityStoryBinding
 
 
     override fun onCreateView(
@@ -38,6 +42,8 @@ class StoryFragment : Fragment() {
     ): View {
         Log.d("fragment_state", "fragment create")
         // Inflate the layout for this fragment
+        activityStoryBinding = ActivityStoryBinding.inflate(layoutInflater, container, false)
+        //viewPager2 = activityStoryBinding.storyPage
         binding = FragmentStoryBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -48,17 +54,11 @@ class StoryFragment : Fragment() {
         progressBar = binding.storyProgress
         progressBar.max = 5000
 
+
         lifecycleScope.launch(Dispatchers.IO) {
             activity?.runOnUiThread {
                 loadData()
             }
-//            lifecycleScope.launch(Dispatchers.Main) {
-//                while (progressBar.progress < progressBar.max) {
-//                    delay(100)
-//                    progressBar.progress += 100
-//                    Log.d("progress", "in onViewCreated")
-//                }
-//            }
             Log.d("fragment_state", "fragment created")
         }
     }
@@ -69,7 +69,10 @@ class StoryFragment : Fragment() {
             while (progressBar.progress < progressBar.max) {
                 delay(10)
                 progressBar.progress += 10
-                Log.d("progress", "in onViewCreated")
+                if (progressBar.progress == progressBar.max) {
+                    viewPager2.currentItem = viewPager2.currentItem + 1
+                    Log.d("progress", "navigate to next fragment")
+                }
             }
         }
     }

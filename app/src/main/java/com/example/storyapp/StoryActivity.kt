@@ -61,7 +61,7 @@ class StoryActivity : AppCompatActivity() {
                             val randomImg = items[randomIndex]
                             val args = Bundle()
                             args.putString("imageUrl", randomImg)
-                            val fragment = StoryFragment().apply { arguments = args }
+                            val fragment = StoryFragment(binding.storyPage).apply { arguments = args }
                             storyList.add(fragment)
                         }
 
