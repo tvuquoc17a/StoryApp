@@ -59,8 +59,10 @@ class StoryActivity : AppCompatActivity() {
                         for (i in 0 until Singleton.storyCount) {
                             val randomIndex = Random.nextInt(items.size)
                             val randomImg = items[randomIndex]
-                            Log.d("randomImg , randomIndex", randomImg + randomIndex)
-                            storyList.add(StoryFragment(randomImg))
+                            val args = Bundle()
+                            args.putString("imageUrl", randomImg)
+                            val fragment = StoryFragment().apply { arguments = args }
+                            storyList.add(fragment)
                         }
 
                         adapter = DynamicStoryAdapter(storyList, supportFragmentManager, lifecycle)

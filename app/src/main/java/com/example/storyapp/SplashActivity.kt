@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 
 class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,14 +23,15 @@ class SplashActivity : AppCompatActivity() {
     }
 
     private fun getValueFromRemoteConfig() {
-        Singleton.firebaseRemoteConfig.fetchAndActivate()
-            .addOnCompleteListener(this) { task ->
-                if (task.isSuccessful) {
-                    val updated = task.result
-
-                    Singleton.storyCount = Singleton.firebaseRemoteConfig.getLong("storyCount").toInt()
+        lifecycleScope.launch {
+            Singleton.firebaseRemoteConfig.fetchAndActivate()
+                .addOnSuccessListener {
+                    Singleton.storyCount =
+                        Singleton.firebaseRemoteConfig.getLong("storyCount").toInt()
                     Log.d("storyCount", Singleton.storyCount.toString())
+
                 }
-            }
+        }
     }
 }
+

@@ -32,6 +32,7 @@ class MainActivity : AppCompatActivity() {
         val fragmentList = arrayListOf(FirstFragment(), SecondFragment(), ThirdFragment())
 
         adapter = ViewPagerAdapter(fragmentList, supportFragmentManager, lifecycle)
+        view.isUserInputEnabled = true
         view.adapter = adapter
         view.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageScrolled(

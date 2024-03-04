@@ -1,5 +1,6 @@
 package com.example.storyapp.adapters
 
+import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
@@ -18,6 +19,8 @@ class DynamicStoryAdapter(
     }
 
     override fun createFragment(position: Int): Fragment {
+        Log.d("fragment_position", "fragment $position")
         return fragmentList[position]
+
     }
 }
