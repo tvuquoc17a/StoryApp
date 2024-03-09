@@ -2,30 +2,25 @@ package com.example.storyapp
 
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.ProgressBar
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.navArgs
 import androidx.viewpager2.widget.ViewPager2
+import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
-import com.example.storyapp.databinding.ActivityMainBinding
-import com.example.storyapp.databinding.ActivityStoryBinding
 import com.example.storyapp.databinding.FragmentStoryBinding
-import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import javax.sql.DataSource
 
 
 class StoryFragment(private var viewPager2: ViewPager2) : Fragment() {
@@ -33,7 +28,7 @@ class StoryFragment(private var viewPager2: ViewPager2) : Fragment() {
     private var isImageLoadedFromCache = false
     private lateinit var imageUrl: String
     private lateinit var progressBar: ProgressBar
-    private lateinit var activityStoryBinding : ActivityStoryBinding
+    private var isPageLoaded = false
 
 
     override fun onCreateView(
@@ -42,8 +37,7 @@ class StoryFragment(private var viewPager2: ViewPager2) : Fragment() {
     ): View {
         Log.d("fragment_state", "fragment create")
         // Inflate the layout for this fragment
-        activityStoryBinding = ActivityStoryBinding.inflate(layoutInflater, container, false)
-        //viewPager2 = activityStoryBinding.storyPage
+
         binding = FragmentStoryBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -54,24 +48,48 @@ class StoryFragment(private var viewPager2: ViewPager2) : Fragment() {
         progressBar = binding.storyProgress
         progressBar.max = 5000
 
-
+        //listenForPageChange()
         lifecycleScope.launch(Dispatchers.IO) {
             activity?.runOnUiThread {
                 loadData()
             }
             Log.d("fragment_state", "fragment created")
         }
+        runProgressBar()
+        abc()
     }
 
+    private fun abc(){
+        viewPager2.registerOnPageChangeCallback(object : OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                Log.d("asgawgawgawg", "onPageSelected: $position")
+                job?.cancel()
+                job?.start()
+            }
+
+            override fun onPageScrolled(
+                position: Int,
+                positionOffset: Float,
+                positionOffsetPixels: Int
+            ) {
+                super.onPageScrolled(position, positionOffset, positionOffsetPixels)
+            }
+        })
+    }
+    private var job: Job? = null
+
     private fun runProgressBar() {
-        lifecycleScope.launch {
+
+        job =  lifecycleScope.launch {
+            binding.idStory.text = viewPager2.currentItem.toString()
             progressBar.progress = 0
-            while (progressBar.progress < progressBar.max) {
+            for (i in 0..progressBar.max step 10) {
+                progressBar.progress = i
                 delay(10)
-                progressBar.progress += 10
-                if (progressBar.progress == progressBar.max) {
-                    viewPager2.currentItem = viewPager2.currentItem + 1
-                    Log.d("progress", "navigate to next fragment")
+                if (progressBar.progress == progressBar.max ) {
+                    Log.d("progress", "transfer")
+
+                    viewPager2.currentItem += 1
                 }
             }
         }
@@ -109,8 +127,6 @@ class StoryFragment(private var viewPager2: ViewPager2) : Fragment() {
         } catch (e: Exception) {
             Log.d("error", e.message.toString())
         } finally {
-            //runProgressBar()
-            Log.d("progress", "in loadData block")
         }
 
     }
@@ -118,11 +134,9 @@ class StoryFragment(private var viewPager2: ViewPager2) : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        runProgressBar()
-        Log.d("progress", "in resume block")
+        Log.d("current_page ", "from fragment ${viewPager2.currentItem}")
+        isPageLoaded = false
         Log.d("fragment_state", "onResume")
 
     }
-
-
 }
